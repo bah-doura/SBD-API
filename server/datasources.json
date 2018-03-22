@@ -1,0 +1,12 @@
+{
+  "sdbdDataBase": {
+    "host": "localhost",
+    "port": 5432,
+    "url": "postgres://postgres:doura224@localhost:5432/sdbdDatabase?ssl=false",
+    "database": "sdbdDatabase",
+    "password": "doura224",
+    "name": "sdbdDataBase",
+    "user": "postgres",
+    "connector": "postgresql"
+  }
+}

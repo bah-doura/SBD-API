@@ -1,0 +1,60 @@
+{
+  "name": "adult",
+  "plural": "adults",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "age": {
+      "type": "number"
+    },
+    "workclass": {
+      "type": "string"
+    },
+    "fnlwgt": {
+      "type": "number"
+    },
+    "education": {
+      "type": "string"
+    },
+    "education_num": {
+      "type": "number"
+    },
+    "marital_status": {
+      "type": "string"
+    },
+    "occupation": {
+      "type": "string"
+    },
+    "relationship": {
+      "type": "string"
+    },
+    "race": {
+      "type": "string"
+    },
+    "sex": {
+      "type": "string"
+    },
+    "capital_gain": {
+      "type": "number"
+    },
+    "capital_loss": {
+      "type": "number"
+    },
+    "hours_per_week": {
+      "type": "number"
+    },
+    "native_country": {
+      "type": "string"
+    },
+    "salary": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}
