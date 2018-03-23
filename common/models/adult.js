@@ -15,8 +15,9 @@ module.exports = function(Adult) {
   Adult.disableRemoteMethodByName('replaceById');
   Adult.disableRemoteMethodByName('replaceOrCreate');
   Adult.disableRemoteMethodByName('upsertWithWhere');
+  Adult.disableRemoteMethodByName('count');
 
-  var response;
+  var override = Adult.find;
 
   var sgn = function(x) {
     return x < 0 ? -1 : 1;
@@ -33,12 +34,8 @@ module.exports = function(Adult) {
     return F + laplace(0.0, deltaF / epsilon);
   };
 
-  Adult.greet = function(msg, cb) {
-    cb(null, msg);
-  };
-
   Adult.sum = function(target, ope, value, cb) {
-    var request = 'select sum(age) from adult where age=30;';
+    var request = 'select sum( ' + target + ') from adult where ' + target + ope + value;
 
     var ds = Adult.dataSource;
     ds.connector.query(request, function(err, response) {
@@ -54,6 +51,26 @@ module.exports = function(Adult) {
     'sum', {
       description: 'sum request',
       http: {path: '/sum', verb: 'get'},
+      accepts: [{arg: 'target', type: 'string'}, {arg: 'ope', type: 'string'}, {arg: 'value', type: 'integer'}],
+      returns: {arg: 'result', type: 'string'}}
+  );
+
+  Adult.countAdult = function(target, ope, value, cb) {
+    var request = 'select count( ' + target + ') from adult where ' + target + ope + value;
+
+    var ds = Adult.dataSource;
+    ds.connector.query(request, function(err, response) {
+      if (err) {
+        cb(null, err);
+      } else {
+        cb(null, response);
+      }
+    });
+  };
+  Adult.remoteMethod(
+    'countAdult', {
+      description: 'count request',
+      http: {path: '/count', verb: 'get'},
       accepts: [{arg: 'target', type: 'string'}, {arg: 'ope', type: 'string'}, {arg: 'value', type: 'integer'}],
       returns: {arg: 'result', type: 'string'}}
   );
