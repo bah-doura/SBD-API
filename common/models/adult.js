@@ -82,9 +82,9 @@ module.exports = function(Adult) {
       returns: {arg: 'result', type: 'text'}}
   );
 
-  Adult.avg = function(target, cb) {
-    var request = 'select AVG( ' + target + ') from adult;';
-
+  Adult.avg = function(target, ope, param,  value,  cb) {
+    var request = 'select AVG(' + target + ') from adult where ' + param + ope + '\' ' + value + '\'';
+    console.log(request);
     var ds = Adult.dataSource;
     ds.connector.query(request, function(err, response) {
       if (err) {
@@ -99,7 +99,10 @@ module.exports = function(Adult) {
     'avg', {
       description: 'average request',
       http: {path: '/avg', verb: 'get'},
-      accepts: [{arg: 'target', type: 'string'}],
+      accepts: [{arg: 'target', type: 'string'},
+        {arg: 'ope', type: 'string'},
+        {arg: 'param', type: 'string'},
+        {arg: 'value', type: 'string'}],
       returns: {arg: 'result', type: 'text'}}
   );
 };
