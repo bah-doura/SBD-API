@@ -17,6 +17,12 @@ module.exports = function(Adult) {
   Adult.disableRemoteMethodByName('upsertWithWhere');
   Adult.disableRemoteMethodByName('count');
 
+  var sumDeltaF = new Map();
+  sumDeltaF.set('age', 120);
+  sumDeltaF.set('capital_gain', 99999);
+  sumDeltaF.set('capital_loss', 99999);
+  sumDeltaF.set('hours_per_week', 99);
+
   var override = Adult.find;
 
   var sgn = function(x) {
@@ -39,6 +45,7 @@ module.exports = function(Adult) {
       if (err) {
         cb(null, err);
       } else {
+        response['0'].sum = privacy(parseInt(response['0'].sum), sumDeltaF.get(target), 0.1);
         cb(null, response);
       }
     });
@@ -74,4 +81,4 @@ module.exports = function(Adult) {
   );
 };
 
-//privacy(response, 1, 0.1)
+
