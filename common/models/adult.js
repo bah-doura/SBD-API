@@ -23,20 +23,17 @@ module.exports = function(Adult) {
     return x < 0 ? -1 : 1;
   };
 
-// From wikipedia:
-// Lap(X) = mu - b sgn(U) ln (1-2|U|) where U is a random variable between -0.5 and 0.5
   var laplace = function(mu, b) {
     var U = Math.random() - 0.5;
     return mu - (b * sgn(U) * Math.log(1 - 2 * Math.abs(U)));
   };
 
-  var f = function(F, deltaF, epsilon) {
+  var privacy = function(F, deltaF, epsilon) {
     return F + laplace(0.0, deltaF / epsilon);
   };
 
   Adult.sum = function(target, ope, value, cb) {
     var request = 'select sum( ' + target + ') from adult where ' + target + ope + value;
-
     var ds = Adult.dataSource;
     ds.connector.query(request, function(err, response) {
       if (err) {
@@ -52,7 +49,7 @@ module.exports = function(Adult) {
       description: 'sum request',
       http: {path: '/sum', verb: 'get'},
       accepts: [{arg: 'target', type: 'string'}, {arg: 'ope', type: 'string'}, {arg: 'value', type: 'integer'}],
-      returns: {arg: 'result', type: 'string'}}
+      returns: {arg: 'result', type: 'json'}}
   );
 
   Adult.countAdult = function(target, ope, value, cb) {
@@ -63,6 +60,7 @@ module.exports = function(Adult) {
       if (err) {
         cb(null, err);
       } else {
+        response['0'].count = privacy(parseInt(response['0'].count), 1, 0.1);
         cb(null, response);
       }
     });
@@ -72,7 +70,8 @@ module.exports = function(Adult) {
       description: 'count request',
       http: {path: '/count', verb: 'get'},
       accepts: [{arg: 'target', type: 'string'}, {arg: 'ope', type: 'string'}, {arg: 'value', type: 'integer'}],
-      returns: {arg: 'result', type: 'string'}}
+      returns: {arg: 'result', type: 'text'}}
   );
 };
 
+//privacy(response, 1, 0.1)
