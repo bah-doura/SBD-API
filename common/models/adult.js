@@ -23,8 +23,6 @@ module.exports = function(Adult) {
   sumDeltaF.set('capital_loss', 99999);
   sumDeltaF.set('hours_per_week', 99);
 
-  var override = Adult.find;
-
   var sgn = function(x) {
     return x < 0 ? -1 : 1;
   };
@@ -45,8 +43,8 @@ module.exports = function(Adult) {
       if (err) {
         cb(null, err);
       } else {
-        response['0'].sum = privacy(parseInt(response['0'].sum), sumDeltaF.get(target), 0.1);
-        cb(null, response);
+        // response['0'].sum = privacy(parseInt(response['0'].sum), sumDeltaF.get(target), 0.1);
+        cb(null, privacy(parseInt(response['0'].sum), sumDeltaF.get(target), 0.1));
       }
     });
   };
@@ -56,7 +54,7 @@ module.exports = function(Adult) {
       description: 'sum request',
       http: {path: '/sum', verb: 'get'},
       accepts: [{arg: 'target', type: 'string'}, {arg: 'ope', type: 'string'}, {arg: 'value', type: 'integer'}],
-      returns: {arg: 'result', type: 'json'}}
+      returns: {arg: 'result', type: 'number'}}
   );
 
   Adult.countAdult = function(target, ope, value, cb) {
@@ -67,8 +65,8 @@ module.exports = function(Adult) {
       if (err) {
         cb(null, err);
       } else {
-        response['0'].count = privacy(parseInt(response['0'].count), 1, 0.1);
-        cb(null, response);
+        // response['0'].count = privacy(parseInt(response['0'].count), 1, 0.1);
+        cb(null, privacy(parseInt(response['0'].count), 1, 0.1));
       }
     });
   };
@@ -79,19 +77,18 @@ module.exports = function(Adult) {
       accepts: [{arg: 'target', type: 'string'},
         {arg: 'ope', type: 'string'},
         {arg: 'value', type: 'integer'}],
-      returns: {arg: 'result', type: 'text'}}
+      returns: {arg: 'result', type: 'number'}}
   );
 
   Adult.avg = function(target, ope, param,  value,  cb) {
     var request = 'select AVG(' + target + ') from adult where ' + param + ope + '\' ' + value + '\'';
-    console.log(request);
     var ds = Adult.dataSource;
     ds.connector.query(request, function(err, response) {
       if (err) {
         cb(null, err);
       } else {
-        response['0'].avg = privacy(parseInt(response['0'].avg), 1, 0.1);
-        cb(null, response);
+        // response['0'].avg = privacy(parseInt(response['0'].avg), 1, 0.1);
+        cb(null, privacy(parseInt(response['0'].avg), 1, 0.1));
       }
     });
   };
@@ -103,7 +100,7 @@ module.exports = function(Adult) {
         {arg: 'ope', type: 'string'},
         {arg: 'param', type: 'string'},
         {arg: 'value', type: 'string'}],
-      returns: {arg: 'result', type: 'text'}}
+      returns: {arg: 'result', type: 'number'}}
   );
 };
 
