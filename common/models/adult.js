@@ -17,12 +17,19 @@ module.exports = function(Adult) {
   Adult.disableRemoteMethodByName('upsertWithWhere');
   Adult.disableRemoteMethodByName('count');
 
+  /**
+   * Valeur par défaut des deltaF pour la methode sum
+   */
   var sumDeltaF = new Map();
   sumDeltaF.set('age', 120);
   sumDeltaF.set('capital_gain', 99999);
   sumDeltaF.set('capital_loss', 99999);
   sumDeltaF.set('hours_per_week', 99);
 
+  /**
+   * Algorithme de tri par insertion pour trier le tableau de donnée afin de trouver la médiane
+   * @param {*} t tableau à trier
+   */
   var tri_insert = function(t) {
     for (var i = 1; i < t.length; i++) {
       var temp = t[i];
@@ -36,15 +43,29 @@ module.exports = function(Adult) {
     return t;
   };
 
+/**
+ * AlGORITHME D'ANONYMISATION
+*/
+
   var sgn = function(x) {
     return x < 0 ? -1 : 1;
   };
 
+  /**
+   * distribution de Laplace largement inspiré de la page wikipedia : https://en.wikipedia.org/wiki/Laplace_distribution
+   * @param {*} mu 
+   * @param {*} b 
+   */
   var laplace = function(mu, b) {
     var U = Math.random() - 0.5;
     return mu - (b * sgn(U) * Math.log(1 - 2 * Math.abs(U)));
   };
 
+  /**
+   *  Fonction d'anonymisation
+   * La fonction utilise une distribution de laplace
+   * La fonction est répété 100 fois. Les valeurs sont conservé dans un tableau
+   */
   var privacy = function(F, deltaF, epsilon) {
     var tab = new Array();
     for (var i = 0; i < 100; i++) {
@@ -53,6 +74,14 @@ module.exports = function(Adult) {
     return tab;
   };
 
+  /**
+   * CALCULE DE LA MEDIANE, VARIANCE ET ERREUR MOYENNE
+   */
+
+  /**
+   * Calcule de la mediane pour le tableau de donnée tab
+   * @param {*} tab 
+   */
   var mediane = function(tab) {
     var res = 0;
     if (tab.length % 2 == 0) {
@@ -64,6 +93,11 @@ module.exports = function(Adult) {
     return res;
   };
 
+  /**
+   * Calculue de l'erreur moyenne pour le tableau de donnée tab, et la valeur réelle value
+   * @param {*} tab 
+   * @param {*} value 
+   */
   var erreurMoy = function(tab, value) {
     var res = 0;
     for (var i = 0; i < tab.length; i++) {
@@ -72,6 +106,10 @@ module.exports = function(Adult) {
     return res / tab.length;
   };
 
+  /**
+   * Calcule de la variance pour le tableau de donnée tab
+   * @param {*} tab 
+   */
   var variance = function(tab) {
     var res = 0;
     for (var i = 0; i < tab.length; i++) {
@@ -80,6 +118,10 @@ module.exports = function(Adult) {
     return res / tab.length;
   };
 
+  /**
+   * Calcule de la moyenne
+   * @param {*} tab 
+   */
   var moyenne = function(tab) {
     var res = 0;
     for (var i = 0; i < tab.length; i++) {
@@ -88,6 +130,18 @@ module.exports = function(Adult) {
     return (res / tab.length);
   };
 
+  /**
+   * API
+   */
+
+  /**
+   * Methode sum
+   * @param {*} sum 
+   * @param {*} target 
+   * @param {*} ope 
+   * @param {*} value 
+   * @param {*} cb 
+   */
   Adult.sum = function(sum, target, ope, value, cb) {
     value = '\'' + value + '\'';
     var request = 'select sum(' + sum + ') from adult where ' + target + ope + value;
@@ -112,7 +166,6 @@ module.exports = function(Adult) {
       }
     });
   };
-
   Adult.remoteMethod(
     'sum', {
       description: 'sum request',
@@ -121,6 +174,13 @@ module.exports = function(Adult) {
       returns: {arg: 'result', type: 'number'}}
   );
 
+  /**
+   * Methode count
+   * @param {*} target 
+   * @param {*} ope 
+   * @param {*} value 
+   * @param {*} cb 
+   */
   Adult.countAdult = function(target, ope, value, cb) {
     var request = 'select count(*) from adult where ' + target + ope + value;
 
