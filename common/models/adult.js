@@ -90,15 +90,14 @@ module.exports = function(Adult) {
 
   Adult.sum = function(sum, target, ope, value, cb) {
     value = '\'' + value + '\'';
-    console.log(value);
-    var request = 'select sum( ' + sum + ') from adult where ' + target + ope + value;
+    var request = 'select sum(' + sum + ') from adult where ' + target + ope + value;
+    console.log(request);
     var ds = Adult.dataSource;
     ds.connector.query(request, function(err, response) {
       if (err) {
         cb(null, err);
       } else {
-        var tab = privacy(parseInt(response['0'].sum), sumDeltaF.get(target), 0.1);
-
+        var tab = privacy(parseInt(response['0'].sum), sumDeltaF.get(sum), 0.1);
         var va = variance(tab);
         var med = mediane(tab);
         var erreur = erreurMoy(tab, parseInt(response['0'].sum));
@@ -155,7 +154,7 @@ module.exports = function(Adult) {
       returns: {arg: 'result', type: 'number'}}
   );
 
-  Adult.avg = function(target, ope, param,  value,  cb) {
+  /*Adult.avg = function(target, ope, param,  value,  cb) {
     var request = 'select AVG(' + target + ') from adult where ' + param + ope + '\' ' + value + '\'';
     var ds = Adult.dataSource;
     ds.connector.query(request, function(err, response) {
@@ -175,6 +174,6 @@ module.exports = function(Adult) {
         {arg: 'param', type: 'string'},
         {arg: 'value', type: 'string'}],
       returns: {arg: 'result', type: 'number'}}
-  );
+  );*/
 };
 
