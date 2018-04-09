@@ -23,6 +23,19 @@ module.exports = function(Adult) {
   sumDeltaF.set('capital_loss', 99999);
   sumDeltaF.set('hours_per_week', 99);
 
+  var tri_insert = function(t) {
+    for (var i = 1; i < t.length; i++) {
+      var temp = t[i];
+      var j = i - 1;
+      while ((temp > t[j]) && j >= 0) {
+        t[j + 1] = t[j];
+        j--;
+      };
+      t[j + 1] = temp;
+    }
+    return t;
+  };
+
   var sgn = function(x) {
     return x < 0 ? -1 : 1;
   };
@@ -33,18 +46,70 @@ module.exports = function(Adult) {
   };
 
   var privacy = function(F, deltaF, epsilon) {
-    return F + laplace(0.0, deltaF / epsilon);
+    var tab = new Array();
+    for (var i = 0; i < 100; i++) {
+      tab.push(F + laplace(0.0, deltaF / epsilon));
+    }
+    return tab;
   };
 
-  Adult.sum = function(target, ope, value, cb) {
-    var request = 'select sum( ' + target + ') from adult where ' + target + ope + value;
+  var mediane = function(tab) {
+    var res = 0;
+    if (tab.length % 2 == 0) {
+      res = (tab[tab.length / 2] + tab[(tab.length / 2) + 1]) / 2;
+    }
+    else {
+      res = tab[tab.length / 2];
+    } 
+    return res;
+  };
+
+  var erreurMoy = function(tab, value) {
+    var res = 0;
+    for (var i = 0; i < tab.length; i++) {
+      res = res + Math.abs(tab[i] - value);
+    }
+    return res / tab.length;
+  };
+
+  var variance = function(tab) {
+    var res = 0;
+    for (var i = 0; i < tab.length; i++) {
+      res = res + tab[i] * tab[i];
+    }
+    return res / tab.length;
+  };
+
+  var moyenne = function(tab) {
+    var res = 0;
+    for (var i = 0; i < tab.length; i++) {
+      res = res + tab[i];
+    }
+    return (res / tab.length);
+  };
+
+  Adult.sum = function(sum, target, ope, value, cb) {
+    value = '\'' + value + '\'';
+    console.log(value);
+    var request = 'select sum( ' + sum + ') from adult where ' + target + ope + value;
     var ds = Adult.dataSource;
     ds.connector.query(request, function(err, response) {
       if (err) {
         cb(null, err);
       } else {
-        // response['0'].sum = privacy(parseInt(response['0'].sum), sumDeltaF.get(target), 0.1);
-        cb(null, privacy(parseInt(response['0'].sum), sumDeltaF.get(target), 0.1));
+        var tab = privacy(parseInt(response['0'].sum), sumDeltaF.get(target), 0.1);
+
+        var va = variance(tab);
+        var med = mediane(tab);
+        var erreur = erreurMoy(tab, parseInt(response['0'].sum));
+        var moy = moyenne(tab);
+        var res = {
+          'result': moy,
+          'mediane': med,
+          'erreur': erreur,
+          'variance': va,
+        };
+        cb(null, res);
       }
     });
   };
@@ -53,20 +118,30 @@ module.exports = function(Adult) {
     'sum', {
       description: 'sum request',
       http: {path: '/sum', verb: 'get'},
-      accepts: [{arg: 'target', type: 'string'}, {arg: 'ope', type: 'string'}, {arg: 'value', type: 'integer'}],
+      accepts: [{arg: 'sum', type: 'string'}, {arg: 'target', type: 'string'}, {arg: 'ope', type: 'string'}, {arg: 'value', type: 'string'}],
       returns: {arg: 'result', type: 'number'}}
   );
 
   Adult.countAdult = function(target, ope, value, cb) {
-    var request = 'select count( ' + target + ') from adult where ' + target + ope + value;
+    var request = 'select count(*) from adult where ' + target + ope + value;
 
     var ds = Adult.dataSource;
     ds.connector.query(request, function(err, response) {
       if (err) {
         cb(null, err);
       } else {
-        // response['0'].count = privacy(parseInt(response['0'].count), 1, 0.1);
-        cb(null, privacy(parseInt(response['0'].count), 1, 0.1));
+        var tab = privacy(parseInt(response['0'].count), 1, 0.1);
+        var va = variance(tab);
+        var med = mediane(tab);
+        var erreur = erreurMoy(tab, parseInt(response['0'].count));
+        var moy = moyenne(tab);
+        var res = {
+          'result': moy,
+          'mediane': med,
+          'erreur': erreur,
+          'variance': va,
+        };
+        cb(null, res);
       }
     });
   };
@@ -76,7 +151,7 @@ module.exports = function(Adult) {
       http: {path: '/count', verb: 'get'},
       accepts: [{arg: 'target', type: 'string'},
         {arg: 'ope', type: 'string'},
-        {arg: 'value', type: 'integer'}],
+        {arg: 'value', type: 'string'}],
       returns: {arg: 'result', type: 'number'}}
   );
 
@@ -87,7 +162,6 @@ module.exports = function(Adult) {
       if (err) {
         cb(null, err);
       } else {
-        // response['0'].avg = privacy(parseInt(response['0'].avg), 1, 0.1);
         cb(null, privacy(parseInt(response['0'].avg), 1, 0.1));
       }
     });
