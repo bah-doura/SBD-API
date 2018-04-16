@@ -34,7 +34,7 @@ module.exports = function(Adult) {
     for (var i = 1; i < t.length; i++) {
       var temp = t[i];
       var j = i - 1;
-      while ((temp > t[j]) && j >= 0) {
+      while ((temp < t[j]) && j >= 0) {
         t[j + 1] = t[j];
         j--;
       };
@@ -71,7 +71,7 @@ module.exports = function(Adult) {
     for (var i = 0; i < 100; i++) {
       tab.push(F + laplace(0.0, deltaF / epsilon));
     }
-    return tab;
+    return tri_insert(tab);
   };
 
   /**
@@ -145,7 +145,6 @@ module.exports = function(Adult) {
   Adult.sum = function(sum, target, ope, value, cb) {
     value = '\'' + value + '\'';
     var request = 'select sum(' + sum + ') from adult where ' + target + ope + value;
-    console.log(request);
     var ds = Adult.dataSource;
     ds.connector.query(request, function(err, response) {
       if (err) {
@@ -156,8 +155,10 @@ module.exports = function(Adult) {
         var med = mediane(tab);
         var erreur = erreurMoy(tab, parseInt(response['0'].sum));
         var moy = moyenne(tab);
+        console.log(tab);
+
         var res = {
-          'result': moy,
+          'result': tab,
           'mediane': med,
           'erreur': erreur,
           'variance': va,
@@ -195,7 +196,7 @@ module.exports = function(Adult) {
         var erreur = erreurMoy(tab, parseInt(response['0'].count));
         var moy = moyenne(tab);
         var res = {
-          'result': moy,
+          'result': tab,
           'mediane': med,
           'erreur': erreur,
           'variance': va,
@@ -214,10 +215,20 @@ module.exports = function(Adult) {
       returns: {arg: 'result', type: 'number'}}
   );
 
-  /*Adult.avg = function(target, ope, param,  value,  cb) {
-    var request = 'select AVG(' + target + ') from adult where ' + param + ope + '\' ' + value + '\'';
+  Adult.countAge = function(cb) {
+    var request1 = 'select COUNT(*) from adult where age > 1 AND age =< 10';
+    var request2 = 'select COUNT(*) from adult where age > 10 AND age =< 20';
+    var request3 = 'select COUNT(*) from adult where age > 20 AND age =< 30';
+    var request4 = 'select COUNT(*) from adult where age > 30 AND age =< 40';
+    var request5 = 'select COUNT(*) from adult where age > 40 AND age =< 50';
+    var request6 = 'select COUNT(*) from adult where age > 50 AND age =< 60';
+    var request7 = 'select COUNT(*) from adult where age > 60 AND age =< 70';
+    var request8 = 'select COUNT(*) from adult where age > 70 AND age =< 80';
+    var request9 = 'select COUNT(*) from adult where age > 80 AND age =< 90';
+    var request10 = 'select COUNT(*) from adult where age > 90 AND age =< 100';
+
     var ds = Adult.dataSource;
-    ds.connector.query(request, function(err, response) {
+    ds.connector.query(request1, function(err, response) {
       if (err) {
         cb(null, err);
       } else {
@@ -234,6 +245,6 @@ module.exports = function(Adult) {
         {arg: 'param', type: 'string'},
         {arg: 'value', type: 'string'}],
       returns: {arg: 'result', type: 'number'}}
-  );*/
+  );
 };
 

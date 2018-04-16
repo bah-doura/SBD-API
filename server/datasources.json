@@ -2,11 +2,11 @@
   "sdbdDataBase": {
     "host": "localhost",
     "port": 5432,
-    "url": "postgres://postgres:doura224@localhost:5432/sdbdDatabase?ssl=false",
-    "database": "sdbdDatabase",
-    "password": "doura224",
-    "name": "sdbdDataBase",
-    "user": "postgres",
+    "url": "romain://romain:G53E6K2R@localhost:5432/projet-sbd?ssl=false",
+    "database": "projet-sbd",
+    "password": "G53E6K2R",
+    "name": "projet-sbd",
+    "user": "romain",
     "connector": "postgresql"
   }
 }
