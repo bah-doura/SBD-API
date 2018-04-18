@@ -53,8 +53,8 @@ module.exports = function(Adult) {
 
   /**
    * distribution de Laplace largement inspiré de la page wikipedia : https://en.wikipedia.org/wiki/Laplace_distribution
-   * @param {*} mu 
-   * @param {*} b 
+   * @param {*} mu
+   * @param {*} b
    */
   var laplace = function(mu, b) {
     var U = Math.random() - 0.5;
@@ -80,23 +80,22 @@ module.exports = function(Adult) {
 
   /**
    * Calcule de la mediane pour le tableau de donnée tab
-   * @param {*} tab 
+   * @param {*} tab
    */
   var mediane = function(tab) {
     var res = 0;
     if (tab.length % 2 == 0) {
       res = (tab[tab.length / 2] + tab[(tab.length / 2) + 1]) / 2;
-    }
-    else {
+    }    else {
       res = tab[tab.length / 2];
-    } 
+    }
     return res;
   };
 
   /**
    * Calculue de l'erreur moyenne pour le tableau de donnée tab, et la valeur réelle value
-   * @param {*} tab 
-   * @param {*} value 
+   * @param {*} tab
+   * @param {*} value
    */
   var erreurMoy = function(tab, value) {
     var res = 0;
@@ -108,7 +107,7 @@ module.exports = function(Adult) {
 
   /**
    * Calcule de la variance pour le tableau de donnée tab
-   * @param {*} tab 
+   * @param {*} tab
    */
   var variance = function(tab) {
     var res = 0;
@@ -120,7 +119,7 @@ module.exports = function(Adult) {
 
   /**
    * Calcule de la moyenne
-   * @param {*} tab 
+   * @param {*} tab
    */
   var moyenne = function(tab) {
     var res = 0;
@@ -136,11 +135,11 @@ module.exports = function(Adult) {
 
   /**
    * Methode sum
-   * @param {*} sum 
-   * @param {*} target 
-   * @param {*} ope 
-   * @param {*} value 
-   * @param {*} cb 
+   * @param {*} sum
+   * @param {*} target
+   * @param {*} ope
+   * @param {*} value
+   * @param {*} cb
    */
   Adult.sum = function(sum, target, ope, value, cb) {
     value = '\'' + value + '\'';
@@ -177,10 +176,10 @@ module.exports = function(Adult) {
 
   /**
    * Methode count
-   * @param {*} target 
-   * @param {*} ope 
-   * @param {*} value 
-   * @param {*} cb 
+   * @param {*} target
+   * @param {*} ope
+   * @param {*} value
+   * @param {*} cb
    */
   Adult.countAdult = function(target, ope, value, cb) {
     var request = 'select count(*) from adult where ' + target + ope + value;
@@ -216,26 +215,112 @@ module.exports = function(Adult) {
   );
 
   Adult.countAge = function(cb) {
-    var request1 = 'select COUNT(*) from adult where age > 1 AND age =< 10';
-    var request2 = 'select COUNT(*) from adult where age > 10 AND age =< 20';
-    var request3 = 'select COUNT(*) from adult where age > 20 AND age =< 30';
-    var request4 = 'select COUNT(*) from adult where age > 30 AND age =< 40';
-    var request5 = 'select COUNT(*) from adult where age > 40 AND age =< 50';
-    var request6 = 'select COUNT(*) from adult where age > 50 AND age =< 60';
-    var request7 = 'select COUNT(*) from adult where age > 60 AND age =< 70';
-    var request8 = 'select COUNT(*) from adult where age > 70 AND age =< 80';
-    var request9 = 'select COUNT(*) from adult where age > 80 AND age =< 90';
-    var request10 = 'select COUNT(*) from adult where age > 90 AND age =< 100';
+    var request1 = 'select COUNT(*) from adult where age > 1 AND age<=10';
+    var request2 = 'select COUNT(*) from adult where age > 10 AND age<=20';
+    var request3 = 'select COUNT(*) from adult where age > 20 AND age<=30';
+    var request4 = 'select COUNT(*) from adult where age > 30 AND age<=40';
+    var request5 = 'select COUNT(*) from adult where age > 40 AND age<=50';
+    var request6 = 'select COUNT(*) from adult where age > 50 AND age<=60';
+    var request7 = 'select COUNT(*) from adult where age > 60 AND age<=70';
+    var request8 = 'select COUNT(*) from adult where age > 70 AND age<=80';
+    var request9 = 'select COUNT(*) from adult where age > 80 AND age<=90';
+    var request10 = 'select COUNT(*) from adult where age > 90 AND age<=100';
+    var res = {response1: [],
+      response2: [],
+      response3: [],
+      response4: [],
+      response5: [],
+      response6: [],
+      response7: [],
+      response8: [],
+      response9: [],
+      response10: []};
 
     var ds = Adult.dataSource;
     ds.connector.query(request1, function(err, response) {
       if (err) {
         cb(null, err);
       } else {
-        cb(null, privacy(parseInt(response['0'].avg), 1, 0.1));
+        res.response1 = privacy(parseInt(response['0'].count), 1, 0.1);
+
+        ds.connector.query(request2, function(err, response) {
+          if (err) {
+            cb(null, err);
+          } else {
+            res.response2 = privacy(parseInt(response['0'].count), 1, 0.1);
+            ds.connector.query(request3, function(err, response) {
+              if (err) {
+                cb(null, err);
+              } else {
+                res.response3 = privacy(parseInt(response['0'].count), 1, 0.1);
+                ds.connector.query(request4, function(err, response) {
+                  if (err) {
+                    cb(null, err);
+                  } else {
+                    res.response4 = privacy(parseInt(response['0'].count), 1, 0.1);
+                    ds.connector.query(request5, function(err, response) {
+                      if (err) {
+                        cb(null, err);
+                      } else {
+                        res.response5 = privacy(parseInt(response['0'].count), 1, 0.1);
+                        ds.connector.query(request6, function(err, response) {
+                          if (err) {
+                            cb(null, err);
+                          } else {
+                            res.response6 = privacy(parseInt(response['0'].count), 1, 0.1);
+                            ds.connector.query(request7, function(err, response) {
+                              if (err) {
+                                cb(null, err);
+                              } else {
+                                res.response7 = privacy(parseInt(response['0'].count), 1, 0.1);
+                                ds.connector.query(request8, function(err, response) {
+                                  if (err) {
+                                    cb(null, err);
+                                  } else {
+                                    res.response8 = privacy(parseInt(response['0'].count), 1, 0.1);
+                                    ds.connector.query(request9, function(err, response) {
+                                      if (err) {
+                                        cb(null, err);
+                                      } else {
+                                        res.response9 = privacy(parseInt(response['0'].count), 1, 0.1);
+                                        ds.connector.query(request10, function(err, response) {
+                                          if (err) {
+                                            cb(null, err);
+                                          } else {
+                                            res.response10 = privacy(parseInt(response['0'].count), 1, 0.1);
+                                            console.log(res);
+                                            cb(res);
+                                          }
+                                        });
+                                      }
+                                    });
+                                  }
+                                });
+                              }
+                            });
+                          }
+                        });
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          }
+        });
       }
     });
+
   };
+
+  Adult.remoteMethod(
+    'countAge', {
+      description: 'count request',
+      http: {path: '/countAge', verb: 'get'},
+      accepts: [],
+      returns: {arg: 'result', type: 'object'}}
+  );
+
   Adult.remoteMethod(
     'avg', {
       description: 'average request',
