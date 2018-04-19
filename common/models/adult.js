@@ -62,16 +62,25 @@ module.exports = function(Adult) {
   };
 
   /**
-   *  Fonction d'anonymisation
+   *  Fonction d'anonymisation multiple
    * La fonction utilise une distribution de laplace
    * La fonction est répété 100 fois. Les valeurs sont conservé dans un tableau
    */
-  var privacy = function(F, deltaF, epsilon) {
+  var privacyMultiple = function(F, deltaF, epsilon) {
     var tab = new Array();
     for (var i = 0; i < 100; i++) {
       tab.push(F + laplace(0.0, deltaF / epsilon));
     }
     return tri_insert(tab);
+  };
+
+  /**
+   *  Fonction d'anonymisation classique
+   * La fonction utilise une distribution de laplace
+   */
+  var privacy = function(F, deltaF, epsilon) {
+    var res = F + laplace(0.0, deltaF / epsilon);
+    return res;
   };
 
   /**
@@ -149,7 +158,7 @@ module.exports = function(Adult) {
       if (err) {
         cb(null, err);
       } else {
-        var tab = privacy(parseInt(response['0'].sum), sumDeltaF.get(sum), 0.1);
+        var tab = privacyMultiple(parseInt(response['0'].sum), sumDeltaF.get(sum), 0.1);
         var va = variance(tab);
         var med = mediane(tab);
         var erreur = erreurMoy(tab, parseInt(response['0'].sum));
@@ -189,7 +198,7 @@ module.exports = function(Adult) {
       if (err) {
         cb(null, err);
       } else {
-        var tab = privacy(parseInt(response['0'].count), 1, 0.1);
+        var tab = privacyMultiple(parseInt(response['0'].count), 1, 0.1);
         var va = variance(tab);
         var med = mediane(tab);
         var erreur = erreurMoy(tab, parseInt(response['0'].count));
@@ -211,11 +220,11 @@ module.exports = function(Adult) {
       accepts: [{arg: 'target', type: 'string'},
         {arg: 'ope', type: 'string'},
         {arg: 'value', type: 'string'}],
-      returns: {arg: 'result', type: 'number'}}
+      returns: {arg: 'result', type: 'json'}}
   );
 
   Adult.countAge = function(cb) {
-    var request1 = 'select COUNT(*) from adult where age > 1 AND age<=10';
+    var request1 = 'select COUNT(*) from adult where age > 0 AND age<=10';
     var request2 = 'select COUNT(*) from adult where age > 10 AND age<=20';
     var request3 = 'select COUNT(*) from adult where age > 20 AND age<=30';
     var request4 = 'select COUNT(*) from adult where age > 30 AND age<=40';
@@ -310,7 +319,6 @@ module.exports = function(Adult) {
         });
       }
     });
-
   };
 
   Adult.remoteMethod(
@@ -318,7 +326,7 @@ module.exports = function(Adult) {
       description: 'count request',
       http: {path: '/countAge', verb: 'get'},
       accepts: [],
-      returns: {arg: 'result', type: 'object'}}
+      returns: {arg: 'result', type: 'number'}}
   );
 
   Adult.remoteMethod(
