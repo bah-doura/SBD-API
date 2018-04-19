@@ -328,16 +328,5 @@ module.exports = function(Adult) {
       accepts: [],
       returns: {arg: 'result', type: 'number'}}
   );
-
-  Adult.remoteMethod(
-    'avg', {
-      description: 'average request',
-      http: {path: '/avg', verb: 'get'},
-      accepts: [{arg: 'target', type: 'string'},
-        {arg: 'ope', type: 'string'},
-        {arg: 'param', type: 'string'},
-        {arg: 'value', type: 'string'}],
-      returns: {arg: 'result', type: 'number'}}
-  );
 };
 

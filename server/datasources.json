@@ -1,12 +1,12 @@
 {
   "sdbdDataBase": {
-    "host": "localhost",
+    "host": "ec2-50-16-196-238.compute-1.amazonaws.com",
     "port": 5432,
-    "url": "romain://romain:G53E6K2R@localhost:5432/projet-sbd?ssl=false",
-    "database": "projet-sbd",
-    "password": "G53E6K2R",
-    "name": "projet-sbd",
-    "user": "romain",
+    "url": "postgres://xerjrytfinsltk:2f87d0e9dd2f447f2039901ba1cb98c0db9d82ef5f43b804fff92db1a664cbe5@ec2-50-16-196-238.compute-1.amazonaws.com:5432/d21fl1ulelk45j",
+    "database": "d21fl1ulelk45j",
+    "password": "2f87d0e9dd2f447f2039901ba1cb98c0db9d82ef5f43b804fff92db1a664cbe5",
+    "name": "sdbdDataBase",
+    "user": "xerjrytfinsltk",
     "connector": "postgresql"
   }
 }
