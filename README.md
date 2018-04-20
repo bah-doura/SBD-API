@@ -1,13 +1,13 @@
 # SBD-API
 
-#Installation
+# Installation
 
 ## prérequis
 
  - Node.js avec NPM
  - Une base de données PostgreSQL
 
-#Usage
+# Usage
 
  - Téléchargez le projet et importez-le dans un IDE
 
