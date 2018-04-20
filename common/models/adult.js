@@ -1,5 +1,4 @@
 'use strict';
-
 module.exports = function(Adult) {
   Adult.disableRemoteMethodByName('prototype.patchAttributes');
   Adult.disableRemoteMethodByName('patchOrCreate');
@@ -25,6 +24,16 @@ module.exports = function(Adult) {
   sumDeltaF.set('capital_gain', 99999);
   sumDeltaF.set('capital_loss', 99999);
   sumDeltaF.set('hours_per_week', 99);
+
+    /**
+     * Valeur de epsilon et budget
+     */
+  var config = new Map();
+  config.set('epsilon', 0.1);
+  config.set('budgetSum', 5);
+  config.set('budgetCount', 5);
+
+
 
   /**
    * Algorithme de tri par insertion pour trier le tableau de donnée afin de trouver la médiane
@@ -158,7 +167,8 @@ module.exports = function(Adult) {
       if (err) {
         cb(null, err);
       } else {
-        var tab = privacyMultiple(parseInt(response['0'].sum), sumDeltaF.get(sum), 0.1);
+        config.set('budgetSum', config.get('budgetSum') - config.get('epsilon'));
+        var tab = privacyMultiple(parseInt(response['0'].sum), sumDeltaF.get(sum), config.get('epsilon'));
         var va = variance(tab);
         var med = mediane(tab);
         var erreur = erreurMoy(tab, parseInt(response['0'].sum));
@@ -171,7 +181,12 @@ module.exports = function(Adult) {
           'erreur': erreur,
           'variance': va,
         };
-        cb(null, res);
+        if (config.get('budgetSum') >= 0) {
+          cb(null, res);
+        }
+        else {
+          cb(null, 0);
+        }
       }
     });
   };
@@ -198,7 +213,9 @@ module.exports = function(Adult) {
       if (err) {
         cb(null, err);
       } else {
-        var tab = privacyMultiple(parseInt(response['0'].count), 1, 0.1);
+        config.set('budgetCount',config.get('budgetCount') - config.get('epsilon'));
+        var tab = privacyMultiple(parseInt(response['0'].count), 1, config.get('epsilon'));
+
         var va = variance(tab);
         var med = mediane(tab);
         var erreur = erreurMoy(tab, parseInt(response['0'].count));
@@ -209,7 +226,12 @@ module.exports = function(Adult) {
           'erreur': erreur,
           'variance': va,
         };
-        cb(null, res);
+        console.log(config.get('budgetCount'));
+        if (config.get('budgetCount') >= 0) {
+          cb(null, res);
+        } else {
+          cb(null, 0);
+        }
       }
     });
   };
@@ -250,53 +272,55 @@ module.exports = function(Adult) {
       if (err) {
         cb(null, err);
       } else {
-        res.response1 = privacy(parseInt(response['0'].count), 1, 0.1);
+        res.response1 = privacy(parseInt(response['0'].count), 1, config.get('epsilon'));
+
+
 
         ds.connector.query(request2, function(err, response) {
           if (err) {
             cb(null, err);
           } else {
-            res.response2 = privacy(parseInt(response['0'].count), 1, 0.1);
+            res.response2 = privacy(parseInt(response['0'].count), 1, config.get('epsilon'));
             ds.connector.query(request3, function(err, response) {
               if (err) {
                 cb(null, err);
               } else {
-                res.response3 = privacy(parseInt(response['0'].count), 1, 0.1);
+                res.response3 = privacy(parseInt(response['0'].count), 1, config.get('epsilon'));
                 ds.connector.query(request4, function(err, response) {
                   if (err) {
                     cb(null, err);
                   } else {
-                    res.response4 = privacy(parseInt(response['0'].count), 1, 0.1);
+                    res.response4 = privacy(parseInt(response['0'].count), 1, config.get('epsilon'));
                     ds.connector.query(request5, function(err, response) {
                       if (err) {
                         cb(null, err);
                       } else {
-                        res.response5 = privacy(parseInt(response['0'].count), 1, 0.1);
+                        res.response5 = privacy(parseInt(response['0'].count), 1, config.get('epsilon'));
                         ds.connector.query(request6, function(err, response) {
                           if (err) {
                             cb(null, err);
                           } else {
-                            res.response6 = privacy(parseInt(response['0'].count), 1, 0.1);
+                            res.response6 = privacy(parseInt(response['0'].count), 1, config.get('epsilon'));
                             ds.connector.query(request7, function(err, response) {
                               if (err) {
                                 cb(null, err);
                               } else {
-                                res.response7 = privacy(parseInt(response['0'].count), 1, 0.1);
+                                res.response7 = privacy(parseInt(response['0'].count), 1, config.get('epsilon'));
                                 ds.connector.query(request8, function(err, response) {
                                   if (err) {
                                     cb(null, err);
                                   } else {
-                                    res.response8 = privacy(parseInt(response['0'].count), 1, 0.1);
+                                    res.response8 = privacy(parseInt(response['0'].count), 1, config.get('epsilon'));
                                     ds.connector.query(request9, function(err, response) {
                                       if (err) {
                                         cb(null, err);
                                       } else {
-                                        res.response9 = privacy(parseInt(response['0'].count), 1, 0.1);
+                                        res.response9 = privacy(parseInt(response['0'].count), 1, config.get('epsilon'));
                                         ds.connector.query(request10, function(err, response) {
                                           if (err) {
                                             cb(null, err);
                                           } else {
-                                            res.response10 = privacy(parseInt(response['0'].count), 1, 0.1);
+                                            res.response10 = privacy(parseInt(response['0'].count), 1, config.get('epsilon'));
                                             console.log(res);
                                             cb(res);
                                           }
