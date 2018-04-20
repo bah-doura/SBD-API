@@ -36,7 +36,7 @@
 
 ## Lancer le programme
  - Avant de lancer le projet assurez vous de bien avoir configurer et  lancé votre Base de  données postgreSQL
- - Exécutez
+ - Exécutez node espace point 
   ```sh
   $ node .
   ```
