@@ -2,7 +2,7 @@
 
 # Installation
 
-## prérequis
+## Prérequis
 
  - Node.js avec NPM
  - Une base de données PostgreSQL
@@ -36,7 +36,7 @@
 
 ## Lancer le programme
  - Avant de lancer le projet assurez vous de bien avoir configurer et  lancé votre Base de  données postgreSQL
- - Exécutez node espace point 
+ - Exécutez node espace point
   ```sh
   $ node .
   ```
